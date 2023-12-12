@@ -1,0 +1,78 @@
+Requirements:
+
+Raspberry Pi 3
+Micro SD Card
+Power Supply
+Camera Module
+LED
+Push button
+Resistor
+Breadboard
+
+Connections:
+LED- Pin 16 via resistor
+Push Button- Pin 22
+Use the breadboard to make the connections. One end of resistor to be connected to pin 16 of 
+RPi and the other end is connected to positive lead of the led. The negative lead of the led is connected to GND(pin 6).
+One end of the push button is connected to pin no. 22 of RPi and the other end to pin no. 14(GND).
+
+Step 1:- Update the packages on Raspberry Pi 
+sudo apt-get update 
+Step 2:- Update firmware 
+sudorpi-update
+Step 3:- Install Pi camera library
+$ sudo apt-get install python-picamera
+$ sudo apt-get install python3-picamera
+Step 4:- Enable the Pi Camera
+$ sudoraspi-config
+Then select Enable camera and Enable it.
+Then user needs to reboot Raspberry Pi, by issuing sudo reboot, so that new setting can take. 
+$ sudo reboot
+Now your Pi camera is ready to use. 
+Step 5:- Install VLC media player for watching recorded video
+sudo apt-get install vlc
+Step 6:- Type the Python Code for Raspberry Pi Telegram Bot
+Type the following code in a new file monitor.py
+
+Python Code
+importRPi.GPIO as GPIO
+frompicamera import PiCamera
+import time
+led=16
+button=22
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(led,GPIO.OUT)
+GPIO.output(led,False)
+GPIO.setup(button,GPIO.IN)
+camera=PiCamera()
+defcapture_image():
+print(“Taking pic”)
+camera.start_preview()
+time.sleep(3)
+d=time.strftime(“%d %b %y %H:%M:%S”)
+camera.capture(“/home/pi/Desktop/%s.jpg”%d)
+camera.resolution=(100,100)
+camera.start_recording(“/home/pi/Desktop/%s.h264”%d)
+camera.wait_recording(10)
+camera.stop_recording()
+camera.stop_preview()
+defopen_gate():
+print(“Welcome”)
+GPIO.output(led,True)
+time.sleep(3)
+print(“Thank you”)
+GPIO.output(led, False)
+try:
+ifGPIO.input(button)==0:
+GPIO.output(led,False)
+time.sleep(0.2)
+capture_image()
+open_gate()
+time.sleep(0.5)
+finally:
+GPIO.cleanup()
+
+Run the code:
+sudo python monitor.py
+

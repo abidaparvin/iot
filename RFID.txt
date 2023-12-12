@@ -1,0 +1,99 @@
+Requirements:
+Raspberry Pi 3
+Micro SD Card
+Power Supply
+RC522 RFID Reader
+RFID Card and tag
+Breadboard
+Jumper Wires (Male to Female
+
+Connections:
+SDA connects to Pin 24.
+SCK connects to Pin 23.
+MOSI connects to Pin 19.
+MISO connects to Pin 21.
+GND connects to Pin 6.
+RST connects to Pin 22.
+3.3v connects to Pin 1.
+
+Code:
+import mfrc522.SimpleMFRC522
+importRPi.GPIO as GPIO
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+reader=mfrc522.SimpleMFRC522()
+try:
+text=raw_input("New data: ")
+print("Now place your tag to write")
+reader.write(text)
+print("Written")
+finally:
+GPIO.cleanup()
+
+Save the file by pressing Ctrl + X then press Enter
+
+Testing the script
+sudo python Write.py
+
+type in RizviCollege. Press Enter.
+
+Output:-
+pi@raspberrypi:~/MFRC522-python
+$ sudo python Write.py
+New data: rizvi
+Now place your tag to write
+Written
+
+-----------
+
+Reading with the RFID RC522:
+
+cd ~/MFRC522-python
+sudonano Read.py
+
+import mfrc522.SimpleMFRC522
+importRPi.GPIO as GPIO
+import time
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM
+reader=mfrc522.SimpleMFRC522()
+try:
+id,text=reader.read()
+print(id)
+print(text)
+finally:
+GPIO.cleanup()
+
+sudo python Read.py
+
+163828202517
+rizvi
+
+----------
+
+Checking RFID card:
+
+cd ~/MFRC522-python
+sudonano RFID.py
+
+import mfrc522.SimpleMFRC522
+importRPi.GPIO as GPIO
+import time
+GPIO.setwarnings(False)
+reader=mfrc522.SimpleMFRC522()
+try:
+id,text=reader.read()
+ #check for id got while running read.py
+if id==163828202517:
+print "Card is valid"
+print "welcome"
+print(text)
+else:
+print "Card is invalid"
+finally:
+GPIO.cleanup()
+
+Test the script
+sudo python RFID.py
+
+

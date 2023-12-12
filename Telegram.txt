@@ -1,0 +1,63 @@
+If the python is not the latest version and pip3 is not the latest version
+wget https://www.python.org/ftp/python/3.11.5/Python-3.11.5.tgz
+cd /home/pi/Downloads
+tar -zxvf Python-3.11.5.tgz
+cd Python-3.11.5
+./configure --enable-optimizations
+sudo make altinstall
+sudo rm -rf /usr/local/lib/python2.7
+sudo rm -rf /usr/local/lib/pypy2.7
+cd /home/pi
+sudo -H pip3 install --upgrade pip
+
+S1:- Setting up Telegram on your phone
+1) Download Telegram app from PlayStore on your phone
+2) Open Telegram on your phone and give your phone number
+3) Search for BotFather bot click on it and click on Start
+4) Type /newbot and send
+5) Give the following:- Name of bot and username ending with bot
+E.g. Name of bot: Tyit2019
+Username: Tyitpractsbot
+6) You will receive a token, please note it correctly
+
+Step 2:- Set up Raspberry Pi
+1.Update and Upgrade RPi
+sudo apt-get update
+sudo apt-get upgrade
+2. Install telepot
+sudo pip3 install telepot
+Step 3:- Type the Python Code for Raspberry Pi Telegram Bot
+Type the following code in a new file telegrambot.py
+Python Code 
+import sys
+import time
+import random
+importdatetime
+importtelepot
+importRPi.GPIO as GPIO
+fromtelepot.loop import MessageLoop
+led=23
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(led,GPIO.OUT)
+GPIO.output(led,0)
+message=””
+def action(msg):
+chat_id=msg[‘chat’][‘id’]
+command=msg[‘text’]
+print(‘Received : %s‘ %command)
+if ‘on’ in command:
+message=”Turned on”
+GPIO.output(led,1)
+telegrambot.sendMessage(chat_id,message)
+print(message)
+if ‘off’ in command:
+message=”Turned off”
+GPIO.output(led,0)
+telegrambot.sendMessage(chat_id,message)
+print(message)
+telegrambot= telepot.Bot(‘66871281:AAssN0t7wikdgtvjhhgfA5Ubjk’)
+MessageLoop(telegrambot,action).run_as_thread()
+print (“listening”)
+while 1:
+time.sleep(10)

@@ -1,0 +1,59 @@
+Requirements:
+Raspberry Pi
+220Ω 8 Resistors
+8 LEDs
+Breadboard
+Jumper Wire
+
+Code:
+
+importRPi.GPIO as GPIO
+import time
+pinno=0
+numTimes= int(input(“Enter total number of times to blink : “))
+speed= float(input(“Enter length of each blink (seconds): “))
+list=[11,12,13,15,16,18,22,29]
+list1=[11,13,16,22]
+list2=[12,15,18,29]
+list3=[29,22,18,16,15,13,12,11]
+list4=[15,16,13,18,12,22,11,29]
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(11,GPIO.OUT)
+GPIO.setup(12,GPIO.OUT)
+GPIO.setup(13,GPIO.OUT)
+GPIO.setup(15,GPIO.OUT)
+GPIO.setup(16,GPIO.OUT)
+GPIO.setup(18,GPIO.OUT)
+GPIO.setup(22,GPIO.OUT)
+GPIO.setup(29,GPIO.OUT)
+def Blink(pinno,numTimes,speed):
+fori in range(0,numTimes):
+print(“Iteration”, (i+1))
+GPIO.output(pinno,True)
+time.sleep(speed)
+GPIO.output(pinno,False)
+time.sleep(speed)
+Blink(11,numTimes,speed)
+Blink(12,numTimes,speed)
+Blink(13,numTimes,speed)
+Blink(15,numTimes,speed)
+Blink(16,numTimes,speed)
+Blink(18,numTimes,speed)
+Blink(22,numTimes,speed)
+Blink(29,numTimes,speed)
+def Blink1(list,numTimes,speed):
+fori in range(0,numTimes):
+print(“Iteration”, (i+1))
+fornum in range(len(list)):
+GPIO.output(list[num],True)
+time.sleep(speed)
+GPIO.output(list[num],False)
+time.sleep(speed)
+Blink1(list,numTimes,speed)
+Blink1(list1,numTimes,speed)
+Blink1(list2,numTimes,speed)
+Blink1(list3,numTimes,speed)
+Blink1(list4,numTimes,speed)
+GPIO.cleanup()
+print(“Done”)

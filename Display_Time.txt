@@ -1,0 +1,77 @@
+Requirements:
+Raspberry Pi 3
+Micro SD Card
+Power Supply
+Seven Segment Display
+4 female-to-female jumper wires
+
+Connections:
+VCC -> Pin 2(5V)
+GND -> Pin 6 
+DIO –> Pin 18
+CLK –> Pin 16
+Connect LAN Cable or connect to WiFi
+
+Step 1:- Updating Raspberry pi and configuring it
+sudo apt-get update
+Step 2:- Install required libraries and dependencies
+Install Python development toolkit that RPi.GPIO requires
+sudo apt-get install python-dev 
+Then to install Rpi.GPIOitself type:
+sudo apt-get install python-rpi.gpio
+Enter 'Y'
+sudo apt-get install git
+sudo apt-get install build-essential
+sudo apt-get install python-smbus
+sudo apt-get install python-imaging
+Step 3:-Configuring I2C
+I2C is a very commonly used standard designed to allow one chip to talk to another. So, since the 
+Raspberry Pi can talk I2C we can connect it to a variety of I2C capable chips and modules.
+The I2C bus allows multiple devices to be connected to your Raspberry Pi, each with a unique 
+address. To install the i2c-tools utility type the following commands
+sudo apt-get install –y i2c-tools 
+sudo apt-get install –y python-smbus
+Step 4:- Enable Raspberry Pi I2C interface (Installing Kernel Support (with Raspi-Config)
+sudoraspi-config
+Run sudoraspi-config and follow the prompts to install i2c support for the ARM core and linux kernel.
+
+When the configuration panels open, select interfacing options,
+
+select I2C and click enable,
+
+select Yes
+
+select Yes, Click OK, select Finish
+Then, reboot 
+sudo reboot
+
+Testing I2C
+Now when you log in you can type the following command to see all the connected devices
+sudo i2cdetect –y 1
+
+Step 6:- Download the Interface library
+wgethttps://raspberrytips.nl/files/tm1637.py
+Python Code for Seven Segment Display: 
+Go to Programming-> Python (IDLE) and select File-> New File and save as sevensegment.py
+Type the following Code: 
+import sys
+import time
+import datetime
+import RPi.GPIO as GPIO
+import tm1637
+Display=tm1637.TM1637(23,24,tm1637.BRIGHT_TYPICAL)
+Display.Clear()
+Display.SetBrightnes(1)
+while(True):
+now=datetime.datetime.now()
+hour=now.hour
+minute=now.minute
+second=now.second
+currenttime=[int(minute/10),minute%10,int(second/10),second%10]
+#currenttime=[int(hour/10), hour %10,int(minute /10), minute %10]
+Display.Show(currenttime)
+Display.ShowDoublepoint(second%2)
+time.sleep(1)
+
+Step 7:- Run the code to test it
+sudo python SevenSegment.py

@@ -1,0 +1,110 @@
+Practical 9:- Home Automation Using MQTT
+www.cloudmqtt.com
+Click Login
+Click Sign in with Google
+khanrafat1@gmail.com
+Click on rafat cutecat from list
+Note details
+Name: rafat
+Plan: cute cat(FRee)
+Tags: abc
+Server: postman.cloudmqtt.com
+Region: amazon-web-services::us-east-1
+Created at: 2019-06-11 06:28 UTC+00:00
+User: vxkumywy
+Password: oWI9q2CWYtZw
+Port 15409
+SSL Port 25409
+Websockets Port (TLS only) 35409
+Connection limit 5
+API Key: 6a2685c3-6c48-4841-acb1-6ef5bffc31bc
+Above step is already done
+Click on Name of the Instance to see the details
+To test Go to WebSocket UI
+Install MQTTDash App on your phone
+Click on + and enter the following details
+
+On Raspberry Pi
+Command Prompt
+sudo apt-get update
+Pip install paho-mqtt
+
+Type the following programs on Raspberry Pi
+Programs:-
+Publisher.py
+from time import sleep
+import paho.mqtt.client as mqtt
+from random import randint
+def on_connect(client,userdata,flags,rc):
+ print("Connected with result code: " + str(rc))
+ client.publish("Light","On")
+broker_address="postman.cloudmqtt.com"
+port=15409
+username="vxkumywy"
+password="oWI9q2CWYtZw"
+client=mqtt.Client("vxkumywy")
+client.username_pw_set(username,password)
+client.on_connect=on_connect
+client.connect(broker_address,port,60)
+try:
+ client.loop_forever()
+except KeyboardInterrupt:
+ print("Program Interrupted")
+ client.disconnect()
+ GPIO.cleanup()
+ exit()
+except:
+ print("Other error")
+ client.disconnect()
+ GPIO.cleanup()
+ exit()
+
+Subscriber.py
+import paho.mqtt.client as mqtt
+import RPi.GPIO as GPIO
+import base64
+pin=9
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(pin, GPIO.OUT)
+GPIO.output(pin,GPIO.LOW)
+def on_connect(client,userdata,flags,rc):
+ print("Connected with result code: " + str(rc))
+ client.subscribe("Light")
+def on_message(client,userdata,msg):
+ try:
+ print(msg.topic+" " +str(msg.payload))
+
+ if 'On' in str(msg.payload):
+ GPIO.output(pin,GPIO.HIGH)
+
+ if 'Off' in str(msg.payload):
+ GPIO.output(pin,GPIO.LOW)
+ except:
+ print("Error")
+broker_address="postman.cloudmqtt.com"
+port=15409
+username="vxkumywy"
+password="oWI9q2CWYtZw"
+client=mqtt.Client()
+client.on_connect=on_connect
+client.on_message=on_message
+client.username_pw_set(username,password)
+client.connect(broker_address,port,60)
+try:
+ client.loop_forever()
+except KeyboardInterrupt:
+ print("Program Interrupted")
+ client.disconnect()
+ GPIO.cleanup()
+ exit()
+except:
+ print("Other error")
+ client.disconnect()
+ GPIO.cleanup()
+ exit()
+
+Run Publisher to publish the value on the topic
+Now run Subscriber to read the value and set the LED to On
+Now from MQTT Dash App, Click on Light and set it to On or Off and notice
+the led switching On or Off based on the commands

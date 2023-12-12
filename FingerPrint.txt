@@ -1,0 +1,130 @@
+Requirements:
+Raspberry Pi 
+USB to Serial converter 
+Fingerprint Module 
+Jumper wires
+
+Procedure:
+
+echo "deb http://apt.pm-codeworks.de wheezy main" | sudo tee -a /etc/apt/sources.list
+wget -O - http://apt.pm-codeworks.de/pm-codeworks.de.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install python-fingerprint
+
+#/usr/bin/python2.7 Enroll.py
+
+or
+in browser http://apt.pm-codeworks.de/pm-codeworks.de.gpg
+the file gets downloaded
+sudo apt-key add -pm-codeworks.de.gpg
+Installing Library for Finger Print Sensor: 
+Step 1: To install this library, root privileges are required. So first we enter in root by given 
+command: 
+sudo bash 
+
+Step 2: Then download some required packages by using given commands: 
+wget –O – http://apt.pm-codeworks.de/pm-codeworks.de.gpg | apt-key add –
+wget http://apt.pm-codeworks.de/pm-codeworks.list -P /etc/apt/sources.list.d/ 
+
+Step 3: After this, we need to update the Raspberry pi and install the downloaded finger 
+print sensor library: 
+sudo apt-get update 
+sudo apt-get install python-fingerprint –yes 
+exit
+
+Step 4: After installing library now we need to check USB port on which your finger print 
+sensor is connected, by using given the command: 
+ls /dev/ttyUSB* 
+Now replace the USB port no., with the USB port you got over the screen and replace it in the 
+python code. Complete Python code is given at the end of this project. 
+
+Python Programming: 
+1. Enrolling a fingerprint
+
+Enroll.py
+
+import time
+frompyfingerprint.pyfingerprint import PyFingerprint
+importRPi.GPIO as gpio
+
+gpio.setwarnings(False)
+try:
+print('Starting....')
+ f=PyFingerprint('/dev/ttyUSB0',57600,0xFFFFFFFF,0x00000000)
+if (f.verifyPassword()==False):
+raiseValueError('The given fingerprint sensor password is wrong!')
+except Exception as e:
+print('Exception message: ' + str(e))
+exit(1)
+defenrollfinger():
+print('Enrolling finger...')
+print('Place finger')
+while (f.readImage()==False):
+pass
+f.convertImage(0x01)
+result=f.searchTemplate()
+positionNumber=result[0]
+print(str(positionNumber))
+if (positionNumber>=0):
+print('Template already exists at position #' + str(positionNumber))
+return
+
+f.createTemplate()
+positionNumber=f.storeTemplate()
+print('Finger enrolled successfully')
+time.sleep(2)
+enrollfinger()
+
+2. Deleting a fingerprint
+delete.py
+import time
+frompyfingerprint.pyfingerprint import PyFingerprint
+importRPi.GPIO as gpio
+gpio.setwarnings(False)
+try:
+print('Starting....')
+ f=PyFingerprint('/dev/ttyUSB0',57600,0xFFFFFFFF,0x00000000)
+if (f.verifyPassword()==False):
+raiseValueError('The given fingerprint sensor password is wrong!')
+except Exception as e:
+print('Exception message: ' + str(e))
+exit(1)
+defdeletefinger():
+print('Deleting finger...')
+print('Place finger')
+position=int(raw_input("Enter position number: "))
+print('Position number : '+ str(position))
+iff.deleteTemplate(position)==True:
+print('Template Deleted successfully')
+time.sleep(2)
+deletefinger()
+
+3. Searching the finger print
+search.py
+import time
+frompyfingerprint.pyfingerprint import PyFingerprint
+importRPi.GPIO as gpio
+gpio.setwarnings(False)
+try:
+print('Starting....')
+ f=PyFingerprint('/dev/ttyUSB0',57600,0xFFFFFFFF,0x00000000)
+if (f.verifyPassword()==False):
+raiseValueError('The given fingerprint sensor password is wrong!')
+except Exception as e:
+print('Exception message: ' + str(e))
+exit(1)
+defsearchfinger():
+print('Searching finger')
+print('Place finger')
+while (f.readImage()==False):
+pass
+f.convertImage(0x01)
+result=f.searchTemplate()
+positionNumber=result[0]
+if (positionNumber==-1):
+print('No Match Found')
+return
+else:
+print('Found Template at position #' + str(positionNumber))
+searchfinger()
+

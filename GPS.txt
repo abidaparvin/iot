@@ -1,0 +1,102 @@
+Requirements:
+Raspberry Pi 3 
+Neo 6m v2 GPS Module 
+Breadboard 
+Jumper cables 
+
+Connections:
+VCC- Pin 1
+GND- Pin 6
+RX- Pin 8
+TX- Pin 10
+
+Preparing the Raspberry Pi to communicate with GPS: 
+Step 1: Updating the Raspberry Pi
+sudo apt-get update 
+then reboot the system with; 
+sudo reboot 
+
+Step 2: Setting up the UART in Raspberry Pi
+Make a copy of /boot/config.txt file
+sudocp /boot/config.txt /boot/config-bak.txt
+
+Edit the /boot/config.txt file. 
+sudonano /boot/config.txt 
+at the bottom of the config.txt file, add the following lines 
+dtparam=spi=on 
+dtoverlay=pi3-disable-bt 
+core_freq=250 
+enable_uart=1 
+force_turbo=1 
+Press ctrl+x to exit and press y and enter to save.
+
+force_turboenables UART to use the maximum core frequency which we are setting in this case to 
+be 250. The reason for this is to ensure consistency and integrity of the serial data been received. 
+The dtoverlay=pi3-disable-bt disconnects the bluetooth from the ttyAMA0, this is to allow us access 
+to use the full UART power available via ttyAMAOinstead of the mini UART ttyS0. 
+
+Reboot the system
+sudo reboot
+
+Edit the boot/cmdline.txtfile
+Make a copy of boot/cmdline.txt
+sudocp /boot/cmdline.txt /boot/cmdline-bak.txt 
+sudonano /boot/cmdline.txt 
+
+Remove console=serial0,115200 and modify root =/dev/mmcblk0p2
+(New contents should look like this
+dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline 
+fsck.repair=yes rootwait quiet splash plymouth.ignore-serial-consoles )
+
+Save and exit. 
+Reboot the system again to effect changes 
+sudo reboot
+
+Step3: Disabling the Raspberry Pi Serial Getty Service 
+The next step is to disable the Pi’s serial the getty service, the command will prevent it from starting 
+again at reboot: 
+sudosystemctl stop serial-getty@ttyS0.service 
+sudosystemctl disable serial-getty@ttyS0.service 
+
+Reboot the system. 
+sudo reboot
+
+Step 4: Activating ttyAMAO: 
+We have disabled the ttyS0, next thing is for us to enable the ttyAMAO. 
+sudosystemctl enable serial-getty@ttyAMA0.service 
+
+Step5: Install Minicom and pynmea2: 
+We will install minicom to connect to the GPS module and make sense of the data. It is also one of 
+the tools that we will use to test whether our GPS module is working fine or not. An alternative to 
+minicom is the daemon software GPSD. 
+sudo apt-get install minicom
+
+To easily parse the received data, we will make use of the pynmea2 library. It can be installed using; 
+sudo pip install pynmea2 
+
+Testing before Python Script: 
+sudominicom -D /dev/ttyAMA0 -b 9600 
+where 9600 represents the baud rate at which the GPS module communicates. This may be 
+used for once we are sure of data communication between the GPS and the RPI
+We will get output in NMEA format
+To scroll from this scolling window 
+Press Ctrl+A, Press X and Press Enter
+
+sudo cat /dev/ttyAMA0
+
+Python Code for GPS module
+import time 
+import serial
+import string
+import pynmea2
+
+defparseGPS(str):
+ifstr.find('GPGGA')>0:
+msg= pynmea2.parse(str)
+print "Timestamp: %s -- Lat: %s %s -- Lon: %s %s - - Altitude: %s %s " 
+%(msg.timestamp, msg.lat, msg.lat_dir, msg.lon, msg.lon_dir, msg.altitude, 
+msg.altitude_units)
+serialPort=serial.Serial("/dev/ttyAMA0", 9600, timeout = 0.5)
+while True:
+str= serialPort.readline()
+parseGPS(str)
